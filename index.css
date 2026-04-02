@@ -7,6 +7,16 @@ body {
 #nav {
     background-color: green;
     padding: 10px;
+    height: 25px;
+}
+
+#nav button {
+    display: none;
+}
+
+#nav p {
+    float: right;
+    margin: auto;
 }
 
 #menu {
