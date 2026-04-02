@@ -22,17 +22,14 @@ body {
     margin: auto;
 }
 
-.board table {
-    float: left;
-    width: 20px;
-    height: 20px;
-}
-
-
-.board white {
+#board .white {
+    width: 25px;
+    height: 25px;
     background-color: white;
 }
 
-.board black {
+#board .black {
+    width: 25px;
+    height: 25px;
     background-color: black;
 }
