@@ -1,5 +1,26 @@
 
+body {
+    margin: 0px;
+    height: 700px;
+}
 
+#nav {
+    background-color: green;
+    padding: 10px;
+}
+
+#menu {
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    height: 400px;
+    margin: auto;
+    margin-top: 10%;
+}
+
+#menu button {
+    margin: auto;
+}
 
 .board table {
     float: left;
