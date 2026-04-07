@@ -43,3 +43,8 @@ body {
     height: 25px;
     background-color: black;
 }
+
+table {
+    border: 5px black solid;
+    padding: 2px;
+}
