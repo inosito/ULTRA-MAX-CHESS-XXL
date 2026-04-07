@@ -2,9 +2,11 @@ function newState(state) {
     if (state === "game") {
         document.getElementById("menu").style.display = "none";
         document.getElementById("back").style.display = "inline";
+        document.getElementById("board").style.display = "inline";
     } else if (state === "menu") {
         document.getElementById("menu").style.display = "flex";
         document.getElementById("back").style.display = "none";
+        document.getElementById("board").style.display = "none";
     }
 };
 
@@ -22,7 +24,6 @@ function initBoard() {
             tr.appendChild(td);
         }
         table.appendChild(tr);
-
     }
     document.getElementById("board").appendChild(table)
 };
@@ -32,7 +33,7 @@ function initClassic() {
     if (sessionStorage.getItem("existingGame") === null) {
         initBoard()
         sessionStorage.setItem("existingGame", true)
-    }
+    } 
 };
 
 function back() {
