@@ -8,13 +8,39 @@ function newState(state) {
     }
 };
 
+const pieceSetting = [bRook,bKnight,bBishop,bQueen,bKing,bBishop,bKnight,bRook,
+                      bPawn,bPawn,bPawn,bPawn,bPawn,bPawn,bPawn,bPawn,
+                      '','','','','','','','',
+                      '','','','','','','','',
+                      '','','','','','','','',
+                      '','','','','','','','',
+                      wPawn,wPawn,wPawn,wPawn,wPawn,wPawn,wPawn,wPawn,
+                      wRook,wKnight,wBishop,wQueen,wKing,wBishop,wKnight,wRook
+]
+
 function initBoard() {
-    var table = document.createElement("table");
-    for (var i = 1; i < 9; i++) {
-        var tr = document.createElement("tr");
-        for (var j = 1; j < 9; j++) {
-            var td = document.createElement("td");
-            if (i%2 == j%2) {
+    let table = document.createElement("table");
+    let letters = "ABCDEFGH";
+    for (let i = 0; i < 9; i++) {
+        let tr = document.createElement("tr");
+        for (let j = 0; j < 9; j++) {
+            let td = document.createElement("td");
+            
+            if (j === 0) {
+                td.textContent = 8 - i || "";
+                td.classList.add("label");
+                tr.appendChild(td);
+                continue;
+            }
+
+            if (i === 8) {
+                td.textContent = letters.charAt(j - 1);
+                td.classList.add("label");
+                tr.appendChild(td);
+                continue;
+            }
+
+            if ((i + j) % 2 == 0) {
                 td.className = "white";
             } else {
                 td.className = "black";
@@ -35,6 +61,15 @@ function initClassic() {
     }
 };
 
+function initBlitz() {
+    newState("game")
+    if (sessionStorage.getItem("existingGame") === null) {
+        initBoard()
+        sessionStorage.setItem("existingGame", true)
+    }
+};
+
 function back() {
     newState("menu")
 }
+
