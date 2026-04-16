@@ -27,6 +27,7 @@ function initBoard() {
         let tr = document.createElement("tr");
         for (let j = 0; j < 9; j++) {
             let td = document.createElement("td");
+            td.onclick = function() {squareClicking(this); };
             
             if (j === 0) {
                 td.textContent = 8 - i || "";
@@ -47,12 +48,52 @@ function initBoard() {
             } else {
                 td.className = "black";
             }
+
+            if (i < 8 && j > 0) {
+                const pieceIndex = (i*8) + (j-1);
+                const piece = pieceSetting[pieceIndex];
+                if (pieceIndex !== undefined && pieceIndex !== "") {
+                    td.innerHTML = piece
+                }
+                const pieceElement = td.querySelector("svg");
+                if (pieceElement) {
+                    pieceElement.classList.add("piece");
+                };
+            };
+
             tr.appendChild(td);
-        }
+        };
         table.appendChild(tr);
-    }
+    };
     document.getElementById("board").appendChild(table)
 };
+
+let selectedPiece = null;
+let selectedSquare = null;
+
+function squareClicking(squareElement) {
+    if (!selectedPiece) {
+        if (squareElement.innerHTML !== "") {
+            selectedPiece = squareElement.innerHTML;
+            selectedSquare = squareElement;
+            squareElement.classList.add("selected");
+        }
+    } else {
+        if (squareElement === selectedSquare) {
+            selectedSquare.classList.remove("selected");
+            selectedPiece = null;
+            selectedSquare = null;
+            return;
+        }
+        squareElement.innerHTML = selectedPiece;
+        selectedSquare.innerHTML = "";
+        selectedSquare.classList.remove("selected")
+        selectedPiece = null;
+        selectedSquare = null;
+    }
+}
+
+
 
 function initClassic() {
     newState("game")

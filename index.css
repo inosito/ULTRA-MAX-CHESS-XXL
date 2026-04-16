@@ -35,16 +35,21 @@ body {
 #board .white {
     width: 25px;
     height: 25px;
-    background-color: white;
+    background-color: #efd9b5;
 }
 
 #board .black {
     width: 25px;
     height: 25px;
-    background-color: black;
+    background-color: #b68862;
 }
 
 table {
     border: 5px black solid;
     padding: 2px;
+}
+
+
+#selected {
+    background-color: yellow;
 }
