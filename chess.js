@@ -1,12 +1,22 @@
 function newState(state) {
-    if (state === "game") {
+    if (state === "classic") {
         document.getElementById("menu").style.display = "none";
         document.getElementById("back").style.display = "inline";
-        document.getElementById("board").style.display = "inline";
-    } else if (state === "menu") {
+        document.getElementById("classic").style.display = "table";
+    } else if (state === "blitz") {
+        document.getElementById("menu").style.display = "none";
+        document.getElementById("back").style.display = "inline";
+        document.getElementById("blitz").style.display = "table";
+    } else if (state === "ultra") {
+        document.getElementById("menu").style.display = "none";
+        document.getElementById("back").style.display = "inline";
+        document.getElementById("ultra").style.display = "table";
+    }  else if (state === "menu") {
         document.getElementById("menu").style.display = "flex";
         document.getElementById("back").style.display = "none";
-        document.getElementById("board").style.display = "none";
+        document.getElementById("classic").style.display = "none";
+        document.getElementById("blitz").style.display = "none";
+        document.getElementById("ultra").style.display = "none";
     }
 };
 
@@ -20,8 +30,9 @@ const pieceSetting = [bRook,bKnight,bBishop,bQueen,bKing,bBishop,bKnight,bRook,
                       wRook,wKnight,wBishop,wQueen,wKing,wBishop,wKnight,wRook
 ]
 
-function initBoard() {
+function initBoard(type) {
     let table = document.createElement("table");
+    table.setAttribute("id", `${type}`);
     let letters = "ABCDEFGH";
     for (let i = 0; i < 9; i++) {
         let tr = document.createElement("tr");
@@ -93,25 +104,31 @@ function squareClicking(squareElement) {
     }
 }
 
-
-
-function initClassic() {
-    newState("game")
-    if (sessionStorage.getItem("existingGame") === null) {
-        initBoard()
-        sessionStorage.setItem("existingGame", true)
-    } 
-};
-
-function initBlitz() {
-    newState("game")
-    if (sessionStorage.getItem("existingGame") === null) {
-        initBoard()
-        sessionStorage.setItem("existingGame", true)
+function initGame(type) {
+    if (sessionStorage.getItem(`existing${type}`) === null) {
+        sessionStorage.setItem(`existing${type}`, true)
+        newState(type)
+    } else {
+        newState(type)
     }
 };
 
 function back() {
     newState("menu")
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    for (let i = 0; i <= 3; i++) {
+        if (i === 0){
+            initBoard("classic");
+            document.getElementById("classic").style.display = "none";
+        } else if (i === 1){
+            initBoard("blitz");
+            document.getElementById("blitz").style.display = "none";
+        } else if (i === 2){
+            initBoard("ultra");
+            document.getElementById("ultra").style.display = "none";
+        };
+    };
+});
 
