@@ -28,7 +28,7 @@ const pieceSetting = [bRook,bKnight,bBishop,bQueen,bKing,bBishop,bKnight,bRook,
                       '','','','','','','','',
                       wPawn,wPawn,wPawn,wPawn,wPawn,wPawn,wPawn,wPawn,
                       wRook,wKnight,wBishop,wQueen,wKing,wBishop,wKnight,wRook
-]
+];
 
 function initBoard(type) {
     let table = document.createElement("table");
@@ -38,7 +38,6 @@ function initBoard(type) {
         let tr = document.createElement("tr");
         for (let j = 0; j < 9; j++) {
             let td = document.createElement("td");
-            td.onclick = function() {squareClicking(this); };
             
             if (j === 0) {
                 td.textContent = 8 - i || "";
@@ -56,8 +55,10 @@ function initBoard(type) {
 
             if ((i + j) % 2 == 0) {
                 td.className = "white";
+                td.onclick = function() {squareClicking(this); };
             } else {
                 td.className = "black";
+                td.onclick = function() {squareClicking(this); };
             }
 
             if (i < 8 && j > 0) {
@@ -76,7 +77,7 @@ function initBoard(type) {
         };
         table.appendChild(tr);
     };
-    document.getElementById("board").appendChild(table)
+    document.getElementById("board").appendChild(table);
 };
 
 let selectedPiece = null;
@@ -107,10 +108,8 @@ function squareClicking(squareElement) {
 function initGame(type) {
     if (sessionStorage.getItem(`existing${type}`) === null) {
         sessionStorage.setItem(`existing${type}`, true)
-        newState(type)
-    } else {
-        newState(type)
-    }
+    };
+    newState(type)
 };
 
 function back() {
