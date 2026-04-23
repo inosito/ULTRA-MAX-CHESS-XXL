@@ -187,7 +187,6 @@ function squareClicking(squareElement) {
         
         const isPlayersPiece = (currentPlayer === "white" && isWhite(piece)) || (currentPlayer === "black" && isBlack(piece));
         if (!isPlayersPiece) return;
-        
         selectSquare(index, squareElement);
         return;
     }

@@ -44,6 +44,14 @@ body {
     background-color: #b68862;
 }
 
+.black.selected {
+    background-color: #b6a962!important;
+}
+
+.white.selected {
+    background-color: #f5ea8d!important;
+}
+
 table {
     border: 5px black solid;
     padding: 2px;
