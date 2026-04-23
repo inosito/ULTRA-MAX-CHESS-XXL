@@ -223,6 +223,16 @@ function squareClicking(squareElement) {
         } else {
             return;
         }
+    } else if (selectedPiece[1] === "N") {
+        const { row: fromRow, col: fromCol } = getRowCol(selectedIndex);
+        const { row: toRow, col: toCol } = getRowCol(index);      
+        const rowDiff = Math.abs(toRow - fromRow);
+        const colDiff = Math.abs(toCol - fromCol);
+        
+        if ((rowDiff === 2 && colDiff === 1 || rowDiff === 1 && colDiff === 2) && !isSameColor(selectedPiece, targetPiece)) {
+        } else {
+            return;
+        }
     }
 
     boardState[index] = boardState[selectedIndex];
