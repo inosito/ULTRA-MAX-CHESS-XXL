@@ -204,6 +204,28 @@ function squareClicking(squareElement) {
         return;
     }
 
+    if (selectedPiece[1] === "P") {
+        const { row: fromRow, col: fromCol } = getRowCol(selectedIndex);
+        const { row: toRow, col: toCol } = getRowCol(index);
+        const rowDiff = toRow - fromRow;
+        const colDiff = toCol - fromCol;
+        const direction = isWhite(selectedPiece) ? -1 : 1;
+        const startRow = isWhite(selectedPiece) ? 6 : 1;
+        
+        if (colDiff === 0) {
+            if (rowDiff === direction && !targetPiece) {
+            } else if (rowDiff === 2 * direction && fromRow === startRow && !targetPiece) {
+                const betweenIndex = getCellIndex(fromRow + direction, fromCol);
+                if (boardState[betweenIndex]) return;
+            } else {
+                return;
+            }
+        } else if (Math.abs(colDiff) === 1 && rowDiff === direction && targetPiece && !isSameColor(selectedPiece, targetPiece)) {
+        } else {
+            return;
+        }
+    }
+
     boardState[index] = boardState[selectedIndex];
     boardState[selectedIndex] = null;
     deselectSquare();
