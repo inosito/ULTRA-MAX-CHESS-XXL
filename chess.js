@@ -233,6 +233,18 @@ function squareClicking(squareElement) {
         } else {
             return;
         }
+    } else if (selectedPiece[1] === "R") {
+        const { row: fromRow, col: fromCol } = getRowCol(selectedIndex);
+        const { row: toRow, col: toCol } = getRowCol(index);
+        const rowDiff = Math.abs(toRow - fromRow);
+        const colDiff = Math.abs(toCol - fromCol);
+
+        if (rowDiff !== 0 && colDiff !== 0) {
+            return
+        }
+        let currentRow = fromRow + rowStep;
+        let currentCol = fromCol + colStep;
+
     }
 
     boardState[index] = boardState[selectedIndex];
