@@ -11,7 +11,7 @@ function newState(state) {
         document.getElementById("menu").style.display = "none";
         document.getElementById("back").style.display = "inline";
         document.getElementById("ultra").style.display = "table";
-    }  else if (state === "menu") {
+    } else if (state === "menu") {
         document.getElementById("menu").style.display = "flex";
         document.getElementById("back").style.display = "none";
         document.getElementById("classic").style.display = "none";
@@ -20,25 +20,96 @@ function newState(state) {
     }
 };
 
-const pieceSetting = [bRook,bKnight,bBishop,bQueen,bKing,bBishop,bKnight,bRook,
-                      bPawn,bPawn,bPawn,bPawn,bPawn,bPawn,bPawn,bPawn,
-                      '','','','','','','','',
-                      '','','','','','','','',
-                      '','','','','','','','',
-                      '','','','','','','','',
-                      wPawn,wPawn,wPawn,wPawn,wPawn,wPawn,wPawn,wPawn,
-                      wRook,wKnight,wBishop,wQueen,wKing,wBishop,wKnight,wRook
+const pieceSvg = {
+    bR: bRook,
+    bN: bKnight,
+    bB: bBishop,
+    bQ: bQueen,
+    bK: bKing,
+    bP: bPawn,
+    wR: wRook,
+    wN: wKnight,
+    wB: wBishop,
+    wQ: wQueen,
+    wK: wKing,
+    wP: wPawn
+};
+
+const pieceSetting = [
+    'bR','bN','bB','bQ','bK','bB','bN','bR',
+    'bP','bP','bP','bP','bP','bP','bP','bP',
+    null,null,null,null,null,null,null,null,
+    null,null,null,null,null,null,null,null,
+    null,null,null,null,null,null,null,null,
+    null,null,null,null,null,null,null,null,
+    'wP','wP','wP','wP','wP','wP','wP','wP',
+    'wR','wN','wB','wQ','wK','wB','wN','wR'
 ];
 
+const boardStates = {
+    classic: [],
+    blitz: [],
+    ultra: []
+};
+
+let currentBoardType = null;
+let currentPlayer = "white";
+let selectedIndex = null;
+let selectedSquare = null;
+
+function createStartingBoardState() {
+    return pieceSetting.slice();
+}
+
+function isWhite(piece) {
+    return piece && piece.startsWith("w");
+}
+
+function isBlack(piece) {
+    return piece && piece.startsWith("b");
+}
+
+function isSameColor(pieceA, pieceB) {
+    if (!pieceA || !pieceB) return false;
+    return (isWhite(pieceA) && isWhite(pieceB)) || (isBlack(pieceA) && isBlack(pieceB));
+}
+
+function getCellIndex(row, col) {
+    return row * 8 + col;
+}
+
+function getRowCol(index) {
+    return { row: Math.floor(index / 8), col: index % 8 };
+}
+
+function renderBoard(type) {
+    const boardState = boardStates[type];
+    const table = document.getElementById(type);
+    if (!table) return;
+    const squares = table.querySelectorAll("td[data-index]");
+    squares.forEach((td) => {
+        const index = Number(td.dataset.index);
+        const piece = boardState[index];
+        td.innerHTML = piece ? pieceSvg[piece] : "";
+        const pieceElement = td.querySelector("svg");
+        if (pieceElement) pieceElement.classList.add("piece");
+
+        if (selectedIndex === index && selectedSquare !== td) {
+            selectedSquare = td;
+        }
+    });
+    updateStatus();
+}
+
 function initBoard(type) {
+    boardStates[type] = createStartingBoardState();
     let table = document.createElement("table");
-    table.setAttribute("id", `${type}`);
+    table.setAttribute("id", type);
     let letters = "ABCDEFGH";
     for (let i = 0; i < 9; i++) {
         let tr = document.createElement("tr");
         for (let j = 0; j < 9; j++) {
             let td = document.createElement("td");
-            
             if (j === 0) {
                 td.textContent = 8 - i || "";
                 td.classList.add("label");
@@ -53,81 +124,113 @@ function initBoard(type) {
                 continue;
             }
 
-            if ((i + j) % 2 == 0) {
+            if ((i + j) % 2 === 0) {
                 td.className = "white";
-                td.onclick = function() {squareClicking(this); };
             } else {
                 td.className = "black";
-                td.onclick = function() {squareClicking(this); };
             }
 
-            if (i < 8 && j > 0) {
-                const pieceIndex = (i*8) + (j-1);
-                const piece = pieceSetting[pieceIndex];
-                if (pieceIndex !== undefined && pieceIndex !== "") {
-                    td.innerHTML = piece
-                }
+            const pieceIndex = (i * 8) + (j - 1);
+            td.dataset.index = pieceIndex;
+            td.onclick = function() { squareClicking(this); };
+
+            const piece = boardStates[type][pieceIndex];
+            if (piece) {
+                td.innerHTML = pieceSvg[piece];
                 const pieceElement = td.querySelector("svg");
                 if (pieceElement) {
                     pieceElement.classList.add("piece");
-                };
-            };
+                }
+            }
 
             tr.appendChild(td);
-        };
+        }
         table.appendChild(tr);
-    };
+    }
     document.getElementById("board").appendChild(table);
-};
+}
 
-let selectedPiece = null;
-let selectedSquare = null;
-
-function squareClicking(squareElement) {
-    if (!selectedPiece) {
-        if (squareElement.innerHTML !== "") {
-            selectedPiece = squareElement.innerHTML;
-            selectedSquare = squareElement;
-            squareElement.classList.add("selected");
-        }
+function updateStatus() {
+    const options = document.getElementById("options");
+    if (!options) return;
+    if (currentBoardType) {
+        options.textContent = `${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)} to move`;
     } else {
-        if (squareElement === selectedSquare) {
-            selectedSquare.classList.remove("selected");
-            selectedPiece = null;
-            selectedSquare = null;
-            return;
-        }
-        squareElement.innerHTML = selectedPiece;
-        selectedSquare.innerHTML = "";
-        selectedSquare.classList.remove("selected")
-        selectedPiece = null;
-        selectedSquare = null;
+        options.textContent = "";
     }
 }
 
+function selectSquare(index, squareElement) {
+    if (selectedSquare) {
+        selectedSquare.classList.remove("selected");
+    }
+    selectedIndex = index;
+    selectedSquare = squareElement;
+    selectedSquare.classList.add("selected");
+}
+
+function deselectSquare() {
+    if (selectedSquare) selectedSquare.classList.remove("selected");
+    selectedIndex = null;
+    selectedSquare = null;
+}
+
+function squareClicking(squareElement) {
+    const type = squareElement.closest("table").id;
+    if (type !== currentBoardType) return;
+    const index = Number(squareElement.dataset.index);
+    const boardState = boardStates[type];
+    const piece = boardState[index];
+
+    if (selectedIndex === null) {
+        if (!piece) return;
+        
+        const isPlayersPiece = (currentPlayer === "white" && isWhite(piece)) || (currentPlayer === "black" && isBlack(piece));
+        if (!isPlayersPiece) return;
+        
+        selectSquare(index, squareElement);
+        return;
+    }
+
+    if (index === selectedIndex) {
+        deselectSquare();
+        return;
+    }
+
+    const selectedPiece = boardState[selectedIndex];
+    const targetPiece = boardState[index];
+    
+    if (targetPiece && isSameColor(selectedPiece, targetPiece)) {
+        return;
+    }
+
+    boardState[index] = boardState[selectedIndex];
+    boardState[selectedIndex] = null;
+    deselectSquare();
+    currentPlayer = currentPlayer === "white" ? "black" : "white";
+    renderBoard(type);
+}
+
 function initGame(type) {
-    if (sessionStorage.getItem(`existing${type}`) === null) {
-        sessionStorage.setItem(`existing${type}`, true)
-    };
-    newState(type)
-};
+    boardStates[type] = createStartingBoardState();
+    currentBoardType = type;
+    currentPlayer = "white";
+    deselectSquare();
+    renderBoard(type);
+    newState(type);
+}
 
 function back() {
-    newState("menu")
+    deselectSquare();
+    currentBoardType = null;
+    updateStatus();
+    newState("menu");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    for (let i = 0; i <= 3; i++) {
-        if (i === 0){
-            initBoard("classic");
-            document.getElementById("classic").style.display = "none";
-        } else if (i === 1){
-            initBoard("blitz");
-            document.getElementById("blitz").style.display = "none";
-        } else if (i === 2){
-            initBoard("ultra");
-            document.getElementById("ultra").style.display = "none";
-        };
-    };
+    ["classic", "blitz", "ultra"].forEach((type) => {
+        initBoard(type);
+        document.getElementById(type).style.display = "none";
+    });
 });
 
