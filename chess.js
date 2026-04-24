@@ -102,6 +102,24 @@ function renderBoard(type) {
             selectedSquare = td;
         }
     });
+    let whiteKing = false;
+    let blackKing = false;
+
+    for (const piece of boardState) {
+        if (piece === "wK") {
+            whiteKing = true
+        } else if (piece === "bK") {
+            blackKing = true
+        }
+    }
+
+    if (whiteKing && !blackKing) {
+        alert(`White has won`);
+        back();
+    } else if (!whiteKing && blackKing) {
+        alert(`Black has won`);
+        back();
+    }
     updateStatus();
 }
 
@@ -395,6 +413,8 @@ function squareClicking(squareElement) {
     if (type === "blitz") {
         startTimer(currentPlayer)
     }
+
+
     renderBoard(type);
 }
 
