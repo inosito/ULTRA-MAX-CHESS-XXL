@@ -10,17 +10,11 @@ function newState(state) {
         document.getElementById("back").style.display = "inline";
         document.getElementById("blitz").style.display = "table";
         if (options) options.style.display = "flex";
-    } else if (state === "ultra") {
-        document.getElementById("menu").style.display = "none";
-        document.getElementById("back").style.display = "inline";
-        document.getElementById("ultra").style.display = "table";
-        if (options) options.style.display = "flex";
     } else if (state === "menu") {
         document.getElementById("menu").style.display = "flex";
         document.getElementById("back").style.display = "none";
         document.getElementById("classic").style.display = "none";
         document.getElementById("blitz").style.display = "none";
-        document.getElementById("ultra").style.display = "none";
         if (options) options.style.display = "none";
     }
 };
@@ -54,13 +48,18 @@ const pieceSetting = [
 const boardStates = {
     classic: [],
     blitz: [],
-    ultra: []
 };
 
 let currentBoardType = null;
 let currentPlayer = "white";
 let selectedIndex = null;
 let selectedSquare = null;
+let timerOngoing = null;
+let timer = null;
+let whiteTimer = null;
+let blackTimer = null;
+let whiteTime = 10
+let blackTime = 300
 
 function createStartingBoardState() {
     return pieceSetting.slice();
@@ -178,6 +177,52 @@ function deselectSquare() {
     if (selectedSquare) selectedSquare.classList.remove("selected");
     selectedIndex = null;
     selectedSquare = null;
+}
+
+function startTimer(player) {
+    if (player === "white") {
+        if (blackTimer) {
+            clearInterval(blackTimer);
+            blackTimer = null;
+        }
+
+        if (!whiteTimer) {
+            whiteTimer = setInterval(() => {
+                if (whiteTime <= 0) {
+                    clearInterval(whiteTimer);
+                    whiteTimer = null;
+                    alert(`White's time is up, black wins by timeout`);
+                    back();
+                    return;
+                }
+
+                document.getElementById("timerDisplay").textContent =
+                    `White: ${whiteTime} Black: ${blackTime}`;
+                whiteTime--;
+            }, 1000)
+        }
+
+    } else if (player === "black") {
+        if (whiteTimer) {
+            clearInterval(whiteTimer);
+            whiteTimer = null;
+        }
+
+        if (!blackTimer) {
+            blackTimer = setInterval(() => {
+                if (blackTime <= 0) {
+                    clearInterval(blackTimer);
+                    blackTimer = null;
+                    alert(`Black's time is up, white wins by timeout`);
+                    back();
+                    return;
+                }
+
+                document.getElementById("timerDisplay").textContent = `White: ${whiteTime} Black: ${blackTime}`;
+                blackTime--;
+            }, 1000)
+        }
+    }
 }
 
 function squareClicking(squareElement) {
@@ -347,6 +392,9 @@ function squareClicking(squareElement) {
     boardState[selectedIndex] = null;
     deselectSquare();
     currentPlayer = currentPlayer === "white" ? "black" : "white";
+    if (type === "blitz") {
+        startTimer(currentPlayer)
+    }
     renderBoard(type);
 }
 
@@ -379,11 +427,13 @@ function back() {
     deselectSquare();
     currentBoardType = null;
     updateStatus();
+    whiteTime = 300;
+    blackTime = 300;
     newState("menu");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    ["classic", "blitz", "ultra"].forEach((type) => {
+    ["classic", "blitz"].forEach((type) => {
         initBoard(type);
         document.getElementById(type).style.display = "none";
     });
