@@ -60,6 +60,13 @@ table {
     margin-top: 50px;
 }
 
+#options {
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+    width: 100px;
+}
+
 
 
 #selected {

@@ -1,22 +1,27 @@
 function newState(state) {
+    const options = document.getElementById("options");
     if (state === "classic") {
         document.getElementById("menu").style.display = "none";
         document.getElementById("back").style.display = "inline";
         document.getElementById("classic").style.display = "table";
+        if (options) options.style.display = "flex";
     } else if (state === "blitz") {
         document.getElementById("menu").style.display = "none";
         document.getElementById("back").style.display = "inline";
         document.getElementById("blitz").style.display = "table";
+        if (options) options.style.display = "flex";
     } else if (state === "ultra") {
         document.getElementById("menu").style.display = "none";
         document.getElementById("back").style.display = "inline";
         document.getElementById("ultra").style.display = "table";
+        if (options) options.style.display = "flex";
     } else if (state === "menu") {
         document.getElementById("menu").style.display = "flex";
         document.getElementById("back").style.display = "none";
         document.getElementById("classic").style.display = "none";
         document.getElementById("blitz").style.display = "none";
         document.getElementById("ultra").style.display = "none";
+        if (options) options.style.display = "none";
     }
 };
 
@@ -151,12 +156,12 @@ function initBoard(type) {
 }
 
 function updateStatus() {
-    const options = document.getElementById("options");
-    if (!options) return;
+    const status = document.getElementById("status");
+    if (!status) return;
     if (currentBoardType) {
-        options.textContent = `${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)} to move`;
+        status.textContent = `${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)} to move`;
     } else {
-        options.textContent = "";
+        status.textContent = "";
     }
 }
 
@@ -236,15 +241,106 @@ function squareClicking(squareElement) {
     } else if (selectedPiece[1] === "R") {
         const { row: fromRow, col: fromCol } = getRowCol(selectedIndex);
         const { row: toRow, col: toCol } = getRowCol(index);
+        const rowDiff = toRow - fromRow;
+        const colDiff = toCol - fromCol;
+
+        if (rowDiff !== 0 && colDiff !== 0) {
+            return;
+        }
+
+        const rowStep = rowDiff === 0 ? 0 : Math.sign(rowDiff);
+        const colStep = colDiff === 0 ? 0 : Math.sign(colDiff);
+        
+        let currentRow = fromRow + rowStep;
+        let currentCol = fromCol + colStep;
+        
+        while (currentRow !== toRow || currentCol !== toCol) {
+            const checkIndex = getCellIndex(currentRow, currentCol);
+            if (boardState[checkIndex]) {
+                return;
+            }
+            currentRow += rowStep;
+            currentCol += colStep;
+        }
+        
+        if (!isSameColor(selectedPiece, targetPiece)) {
+        } else {
+            return;
+        }
+    } else if (selectedPiece[1] === "B") {
+        const { row: fromRow, col: fromCol } = getRowCol(selectedIndex);
+        const { row: toRow, col: toCol } = getRowCol(index);
+        const rowDiff = toRow - fromRow;
+        const colDiff = toCol - fromCol;
+
+        if (Math.abs(rowDiff) !== Math.abs(colDiff)) {
+            return;
+        }
+
+        const rowStep = Math.sign(rowDiff);
+        const colStep = Math.sign(colDiff);
+        
+        let currentRow = fromRow + rowStep;
+        let currentCol = fromCol + colStep;
+        
+        while (currentRow !== toRow || currentCol !== toCol) {
+            const checkIndex = getCellIndex(currentRow, currentCol);
+            if (boardState[checkIndex]) {
+                return;
+            }
+            currentRow += rowStep;
+            currentCol += colStep;
+        }
+        
+        if (!isSameColor(selectedPiece, targetPiece)) {
+        } else {
+            return;
+        }
+    } else if (selectedPiece[1] === "Q") {
+        const { row: fromRow, col: fromCol } = getRowCol(selectedIndex);
+        const { row: toRow, col: toCol } = getRowCol(index);
+        const rowDiff = toRow - fromRow;
+        const colDiff = toCol - fromCol;
+        const absRowDiff = Math.abs(rowDiff);
+        const absColDiff = Math.abs(colDiff);
+
+        if (absRowDiff !== absColDiff && rowDiff !== 0 && colDiff !== 0) {
+            return;
+        }
+
+        const rowStep = rowDiff === 0 ? 0 : Math.sign(rowDiff);
+        const colStep = colDiff === 0 ? 0 : Math.sign(colDiff);
+        
+        let currentRow = fromRow + rowStep;
+        let currentCol = fromCol + colStep;
+        
+        while (currentRow !== toRow || currentCol !== toCol) {
+            const checkIndex = getCellIndex(currentRow, currentCol);
+            if (boardState[checkIndex]) {
+                return;
+            }
+            currentRow += rowStep;
+            currentCol += colStep;
+        }
+        
+        if (!isSameColor(selectedPiece, targetPiece)) {
+        } else {
+            return;
+        }
+    } else if (selectedPiece[1] === "K") {
+        const { row: fromRow, col: fromCol } = getRowCol(selectedIndex);
+        const { row: toRow, col: toCol } = getRowCol(index);
         const rowDiff = Math.abs(toRow - fromRow);
         const colDiff = Math.abs(toCol - fromCol);
 
-        if (rowDiff !== 0 && colDiff !== 0) {
-            return
+        if (Math.max(rowDiff, colDiff) !== 1) {
+            return;
         }
-        let currentRow = fromRow + rowStep;
-        let currentCol = fromCol + colStep;
 
+        if (!isSameColor(selectedPiece, targetPiece)) {
+        } else {
+            return;
+        }
     }
 
     boardState[index] = boardState[selectedIndex];
@@ -263,6 +359,22 @@ function initGame(type) {
     newState(type);
 }
 
+function resetBoard() {
+    if (!currentBoardType) return;
+    boardStates[currentBoardType] = createStartingBoardState();
+    currentPlayer = "white";
+    deselectSquare();
+    renderBoard(currentBoardType);
+    updateStatus();
+}
+
+function forfeit() {
+    if (!currentBoardType) return;
+    const winner = currentPlayer === "white" ? "black" : "white";
+    alert(`${winner.charAt(0).toUpperCase() + winner.slice(1)} wins by forfeit`);
+    back();
+}
+
 function back() {
     deselectSquare();
     currentBoardType = null;
@@ -275,5 +387,6 @@ document.addEventListener("DOMContentLoaded", () => {
         initBoard(type);
         document.getElementById(type).style.display = "none";
     });
+    newState("menu");
 });
 
